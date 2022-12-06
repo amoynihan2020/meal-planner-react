@@ -4,24 +4,41 @@ import { useState } from "react";
 import { List } from '@mui/material';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemButton from '@mui/material/ListItemButton';
+import Button from '@mui/material/Button';
+import { API_KEY } from "../app-data";
+
 const FindRecipeByIngredient = () => {
     const [currentWord, setCurrentWord] = useState('')
     const [submittedIngredients, setSubmittedIngredients] = useState([])
     useEffect(()=>{
 
     }, [submittedIngredients])
+    const preventDuplicate = (itemToCheck) =>{
+        submittedIngredients.forEach((item, index)=> {
+            if(itemToCheck == item){
+                return false
+            } else{
+                return
+            }
+        })
 
+    }
     const handleKeyDown =(e)=> {
-        console.log(e.keyCode)
         if(e.keyCode == 13 || e.keyCode== 188){ //if enter (13) or comma(188) is pressed
-            
             if(e.target.value){
                 setSubmittedIngredients([...submittedIngredients, e.target.value])
             }
         }
           
     }
+    const handleSubmit = () =>{
+    
+    }
 
+    const removeIngredient = (itemToRemove) =>{
+      const filtered = submittedIngredients.filter(item => itemToRemove != item)
+      setSubmittedIngredients(filtered);
+    }
     
     return (
         <>
@@ -32,18 +49,19 @@ const FindRecipeByIngredient = () => {
                    className="submitted-ingredients"
                    label="Enter ingredients"
                 />
-               {submittedIngredients.length > 0 ? 
+               {submittedIngredients?.length > 0 ? 
                <>
                 <div className='added-subtitle'>Added Ingredients</div>
                  <List className='added-items-list'>
-                    {submittedIngredients.map((item)=> {
+                    {submittedIngredients.map((item, index)=> {
                         
-                           return <ListItemButton align-items="flex-start" key={item}>{item}</ListItemButton>
+                           return <ListItemButton onClick={()=> removeIngredient(item)}align-items="flex-start" key={index}>{item}</ListItemButton>
                         
                     })}
 
                      
                  </List>
+                 <Button onClick={()=> handleSubmit}>Get Recipe!</Button>
                                  
                                  
                 </> 
