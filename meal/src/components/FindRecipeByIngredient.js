@@ -6,10 +6,14 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemButton from '@mui/material/ListItemButton';
 import Button from '@mui/material/Button';
 import { API_KEY } from "../app-data";
+import axios from 'axios'
+import { Navigate } from "react-router-dom";
+import FoundRecipes from "./FoundRecipes";
 
 const FindRecipeByIngredient = () => {
     const [currentWord, setCurrentWord] = useState('')
     const [submittedIngredients, setSubmittedIngredients] = useState([])
+    const [retrievedRecipes, setRetrievedRecipes] = useState([])
     useEffect(()=>{
 
     }, [submittedIngredients])
@@ -32,7 +36,20 @@ const FindRecipeByIngredient = () => {
           
     }
     const handleSubmit = () =>{
-    
+        let queryString =`ingredients=${submittedIngredients[0]},`
+        
+        for(let i =1; i<submittedIngredients.length; i++){
+            queryString += `+${submittedIngredients[i]},`
+        }
+        queryString = queryString.replace(/,\s*$/, "")
+        const finalString = `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${API_KEY}&${queryString}&number=8`
+        console.log(finalString)
+        axios.get(finalString).then(resp =>{
+            console.log(resp.data)
+
+            setRetrievedRecipes(resp.data)
+            setSubmittedIngredients([])
+        })
     }
 
     const removeIngredient = (itemToRemove) =>{
@@ -49,6 +66,7 @@ const FindRecipeByIngredient = () => {
                    className="submitted-ingredients"
                    label="Enter ingredients"
                 />
+               
                {submittedIngredients?.length > 0 ? 
                <>
                 <div className='added-subtitle'>Added Ingredients</div>
@@ -61,13 +79,17 @@ const FindRecipeByIngredient = () => {
 
                      
                  </List>
-                 <Button onClick={()=> handleSubmit}>Get Recipe!</Button>
+                 <Button onClick={handleSubmit}>Get Recipe!</Button>
                                  
                                  
                 </> 
 
-                : ''
+                : <>
+                   <div>Recipes</div>
+                   <FoundRecipes recipes={retrievedRecipes}/>
+                </>
             }
+            
             </div>
 
 
